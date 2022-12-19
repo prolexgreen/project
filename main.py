@@ -1,5 +1,5 @@
 import tkinter
-from app import App
+from app import lib
 
 def update(app):
     app.canvas.get_tk_widget().grid(row=0, column=1)
