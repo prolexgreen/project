@@ -1,34 +1,33 @@
-import tkinter
-from datetime import datetime
-from matplotlib.figure import Figure
-from matplotlib import style
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from fbprophet import Prophet
 from pandas_datareader import data
 import pandas as pd
 from datetime import datetime
 import yfinance as yf
+import tkinter
+from datetime import datetime
+from matplotlib.figure import Figure
+from matplotlib import style
 
-style.use("bmh")
 
 class lib:
     def __init__(self, root):
         self.now = str(datetime.now().strftime('%Y-%m-%d'))
-        f = open("list.txt", "r")
+        f = open("save.txt", "r")
         f1 = f.read().split('\n')
         f.close()
         self.root = root
-        self.root.title("Stock-Pred-Program")
+        self.root.title("fouzan program")
         self.root.resizable(False, False)
 
         self.GRAPHVAR = tkinter.IntVar(value=int(f1[4]))
-        self.SHORTVAR = tkinter.IntVar(value=int(f1[5]))
-        self.LONGVAR = tkinter.IntVar(value=int(f1[6]))
+        self.SMALL = tkinter.IntVar(value=int(f1[5]))
+        self.BIG = tkinter.IntVar(value=int(f1[6]))
 
         self.UILF = tkinter.LabelFrame(root, bd=0)
         self.UILF.grid(row=0, column=0, padx=35, pady=10)
 
-        self.UISTOCK = tkinter.Label(self.UILF, text="Stock: ")
+        self.UISTOCK = tkinter.Label(self.UILF, text="TICKER EX TSLA")
         self.UISTOCK.grid(row=0, column=0, sticky="W")
 
         self.UISTOCKE = tkinter.Entry(self.UILF)
@@ -52,12 +51,6 @@ class lib:
         self.UIGRAPHC = tkinter.Checkbutton(self.UILF, text="Graph", variable=self.GRAPHVAR)
         self.UIGRAPHC.grid(row=3, column=0, sticky="W")
 
-        self.UIROLLSC = tkinter.Checkbutton(self.UILF, text="Shortroll", variable=self.SHORTVAR)
-        self.UIROLLSC.grid(row=4, column=0, sticky="W")
-
-        self.UIROLLLC = tkinter.Checkbutton(self.UILF, text="Longroll", variable=self.LONGVAR)
-        self.UIROLLLC.grid(row=5, column=0, sticky="W")
-
         self.UIPRED = tkinter.Label(self.UILF, text='Yrs of Prediction: ')
         self.UIPRED.grid(row=6, column=0, sticky="W")
 
@@ -74,12 +67,12 @@ class lib:
         self.UIBUTTONS = tkinter.Button(self.BTLF, text="Save", command = self.save)
         self.UIBUTTONS.grid(row=0, column=1, sticky="W")
 
-        self.fig = Figure(figsize=(5, 4), dpi=100)
+        self.fig = Figure(figsize=(5, 4), dpi=200)
         self.stockplot = self.fig.add_subplot(111)
-        self.stockplot.set_xlabel('Date')
-        self.stockplot.set_ylabel('Adj Close Price ($)')
-        self.stockplot.set_title('Stock Price')
-        self.canvas = FigureCanvasTkAgg(self.fig, master=root)  # A tk.DrawingArea.
+        self.stockplot.set_xlabel('time ')
+        self.stockplot.set_ylabel('closing ratesssss')
+        self.stockplot.set_title('stock history price ')
+        self.canvas = FigureCanvasTkAgg(self.fig, master=root) 
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=0, column=1)
 
@@ -92,28 +85,22 @@ class lib:
                                     'yahoo',
                                     START_DATE,
                                     END_DATE)
-        weekdays = pd.date_range(start=START_DATE, end=END_DATE)
+        weekdays = pd.date_range(start=START_DATE, end=END_DATE) #FROM YFINANCE DOCUMENTATION
         clean_data = stock_data['Adj Close'].reindex(weekdays)
         adj_close = clean_data.fillna(method='ffill')
         self.stockplot.clear()
-        self.stockplot.set_xlabel('Date')
-        self.stockplot.set_ylabel('Adj Close (p)')
-        self.stockplot.set_title('Stock Price')
+        self.stockplot.set_xlabel('timings that change')
+        self.stockplot.set_ylabel('PRICE OF STOKC AFTER')
+        self.stockplot.set_title('$$$$$')
         pdata = yf.download(STOCK, START_DATE, END_DATE)
         pdata.reset_index(inplace=True)
         df_train = pdata[['Date', 'Close']]
         df_train = df_train.rename(columns={'Date': 'ds', 'Close': 'y'})
         m = Prophet()
         m.fit(df_train)
-
+#check TKINTER FROM TKINTER
         if self.GRAPHVAR.get():
             self.stockplot.plot(adj_close, label=STOCK)
-
-        if self.SHORTVAR.get():
-            self.stockplot.plot(adj_close.rolling(window=50).mean(), label="50 day rolling mean")
-
-        if self.LONGVAR.get():
-            self.stockplot.plot(adj_close.rolling(window=200).mean(), label="200 day rolling mean")
 
         if self.UIPREDS.get():
             future = m.make_future_dataframe(periods=self.UIPREDS.get()*365)
@@ -127,5 +114,5 @@ class lib:
 
     def save(self):
         f = open('save.txt', 'w+')
-        f.write(self.UISTOCKE.get() + '\n' + self.UISDATEE.get() + '\n' + self.UIEDATEE.get() + '\n' + str(self.GRAPHVAR.get()) + '\n' + str(self.SHORTVAR.get()) + '\n' + str(self.LONGVAR.get()) + '\n' + str(self.UIPREDS.get()))
+        f.write(self.UISTOCKE.get() + '\n' + self.UISDATEE.get() + '\n' + self.UIEDATEE.get() + '\n' + str(self.GRAPHVAR.get()) + '\n' + str(self.SMALL.get()) + '\n' + str(self.BIG.get()) + '\n' + str(self.UIPREDS.get()))
         f.close()
