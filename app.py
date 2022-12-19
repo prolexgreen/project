@@ -14,7 +14,7 @@ style.use("bmh")
 class lib:
     def __init__(self, root):
         self.now = str(datetime.now().strftime('%Y-%m-%d'))
-        f = open("save.txt", "r")
+        f = open("list.txt", "r")
         f1 = f.read().split('\n')
         f.close()
         self.root = root
